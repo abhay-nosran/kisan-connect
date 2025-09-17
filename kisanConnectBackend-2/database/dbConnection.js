@@ -1,7 +1,6 @@
+const { Sequelize , DataTypes } = require('sequelize');
 
-const { Sequelize } = require('sequelize');
 require('dotenv').config();
-
 // Supabase connection configuration
 const sequelize = new Sequelize({
   dialect: 'postgres',
@@ -31,5 +30,5 @@ const testConnection = async () => {
 
 // Export both sequelize instance and test connection function
 module.exports = {
-  testConnection , sequelize
+  testConnection , sequelize , DataTypes
 };
