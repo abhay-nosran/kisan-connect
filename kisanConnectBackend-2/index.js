@@ -2,16 +2,22 @@ const express = require('express')
 const app = express()
 require('dotenv').config()
 const syncDatabase = require('./database/dbCreation')
-const {testConnection} = require('./database/dbConnection')
+// const {testConnection} = require('./database/dbConnection')
 const port = process.env.PORT || 3000 
 
 const AuctionController = require('./controllers/Auction/AuctionController');
 const CropController = require('./controllers/Crop/CropController')
+const LoginController = require('./controllers/Login-Signup/LoginController');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const signup = require('./routes/signup')
+
+
 // signup and login routes
+app.post("/auth/login",LoginController.loginUser);
+app.use('/signup',signup)
 
 // get auctions based on query filters  
 app.get("/auctions",AuctionController.getAuctionAll);

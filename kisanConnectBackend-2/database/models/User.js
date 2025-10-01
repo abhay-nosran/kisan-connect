@@ -1,10 +1,11 @@
 const { sequelize , DataTypes } = require('../dbConnection');
 
 const User = sequelize.define('User', {
-  user_id: {
+  userId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    field : "user_id" 
   },
   email: {
     type: DataTypes.STRING(255),
@@ -16,18 +17,20 @@ const User = sequelize.define('User', {
     allowNull: false,
     unique: true
   },
-  password_hash: {
+  passwordHash: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false ,
+    field : "password_hash"
   },
   role: {
     type: DataTypes.ENUM('admin', 'farmer', 'buyer', 'representative','not assigned'),
     allowNull: false,
     defaultValue: 'not assigned'
   },
-  role_id: {
+  roleId: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
+    field : "role_id"
     // can be a foreign key to another table later
   },
 }, {

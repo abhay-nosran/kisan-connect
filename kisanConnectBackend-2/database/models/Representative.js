@@ -2,10 +2,11 @@
 const { sequelize , DataTypes } = require('../dbConnection');
 
 const Representative = sequelize.define("Representative", {
-  representative_id: {
+  representativeId: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
-    primaryKey: true
+    primaryKey: true,
+    field : "representative_id"
   }
 }, {
   tableName: "representatives",

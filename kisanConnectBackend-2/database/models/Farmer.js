@@ -1,19 +1,21 @@
 const { sequelize, DataTypes } = require('../dbConnection');
 
 const Farmer = sequelize.define('Farmer', {
-  farmer_id: {
+  farmerId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    field : "farmer_id"
   },
   location: {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  aadhar_number: {
+  aadharNumber: {
     type: DataTypes.STRING(12),
     allowNull: true,
     unique: true,
+    field : "aadhar_number",
     validate: {
       is: /^[0-9]{12}$/   // same as CHECK constraint in SQL
     }
