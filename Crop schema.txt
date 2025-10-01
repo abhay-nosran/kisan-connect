@@ -1,0 +1,6 @@
+Crop schema
+"id"	"farmer_id"	"crop_name"	"quantity"	"certification"	"status"	"created_at"	"crop_location"	"quality_grade"	"shelf_life"
+
+auction schema
+"id"	"crop_id"	"base_price"	"start_time"	"end_time"	"status"	"highest_bid"	"highest_bidder"	"created_at"
+	
