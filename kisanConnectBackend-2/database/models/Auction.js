@@ -1,33 +1,38 @@
 const { sequelize , DataTypes } = require('../dbConnection');
 
 const Auction = sequelize.define('Auction',{
-    auction_id : {
+    auctionId : {
         type : DataTypes.INTEGER ,
         primaryKey : true ,
-        autoIncrement : true
+        autoIncrement : true ,
+        field : 'auction_id'
     },
     //  crop_id to be added as a foreign key
     // farmer_id to be added as a foreign key
-    base_price : {
+    basePrice : {
         type : DataTypes.DECIMAL(10,2),
-        allowNull : false
+        allowNull : false,
+        field : 'base_price'
     },
-    start_time : {
-        type : DataTypes.Timestamp,
-        allowNull : false
+    startTime : {
+        type : DataTypes.DATE,
+        allowNull : false,
+        field : 'start_time'
     },
-    end_time : {
-        type : DataTypes.Timestamp,
-        allowNull : false
+    endTime : {
+        type : DataTypes.DATE,
+        allowNull : false ,
+        field : 'end_time'
     },
     status : {
-        type : DataTypes.ENUM('to be started','closed','closed'),
+        type : DataTypes.ENUM('to be started','live','closed'),
         allowNull : false,
         defaultValue : 'to be started'
     },
-    highest_bid : {
+    highestBid : {
         type : DataTypes.DECIMAL(10,2),
-        defaultValue : 0.00
+        defaultValue : 0.00,
+        field : 'highest_bid'
     },
     // highest_bidder_id foreign key to be added 
 })

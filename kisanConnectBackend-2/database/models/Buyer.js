@@ -1,26 +1,30 @@
 const { sequelize , DataTypes } = require('../dbConnection');
 
 const Buyer = sequelize.define("Buyer", {
-  buyer_id: {
+  buyerId: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
-    primaryKey: true
+    primaryKey: true,
+    field: "buyer_id"
   },
-  buyer_type: {
+  buyerType: {
     type: DataTypes.ENUM("individual", "company"),
-    allowNull: false
+    allowNull: false,
+    field: "buyer_type"
   },
-  company_name: {
+  companyName: {
     type: DataTypes.TEXT,
-    allowNull: true
+    allowNull: true,
+    field: "company_name"
   },
   verified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
-  created_at: {
+  createdAt: {
     type: DataTypes.DATE,
-    defaultValue: sequelize.literal("CURRENT_TIMESTAMP")
+    defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+    field: "created_at"
   }
 }, {
   tableName: "buyers",

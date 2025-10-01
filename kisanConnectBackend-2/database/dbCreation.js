@@ -15,14 +15,15 @@ async function syncDatabase() {
     // Force: true will drop tables if they exist
     // Force: false will create missing tables only
     // await sequelize.sync({ force: false });
-    // await sequelize.sync({ alter: true });
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
+    // await sequelize.sync();
     console.log('All tables synced successfully!');
   } catch (error) {
     console.error('Error syncing database:', error);
-  } finally {
-    await sequelize.close();
-  }
+  } 
+//   finally {
+//     await sequelize.close();
+//   }
 }
 
 module.exports =  syncDatabase ;

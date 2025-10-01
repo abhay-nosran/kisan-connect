@@ -2,10 +2,11 @@
 const { sequelize , DataTypes } = require('../dbConnection');
 
 const Admin = sequelize.define("Admin", {
-  admin_id: {
+  adminId: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
-    primaryKey: true
+    primaryKey: true,
+    field: "admin_id"
   }
 }, {
   tableName: "admins",

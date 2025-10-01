@@ -1,43 +1,43 @@
 const {sequelize,DataTypes} = require('../dbConnection');
 
 const Crop = sequelize.define('Crop', {
-  crop_id: {
+  cropId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    field: 'crop_id'
   },
-  farmer_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  representative_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  crop_type: {
+  cropType: {
     type: DataTypes.STRING(100),
-    allowNull: false
+    allowNull: false,
+    field: 'crop_type'
   },
-  quantity_kg: {
+  quantityKg: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+    allowNull: false,
+    field: 'quantity_kg'
   },
-  quality_grade: {
-    type: DataTypes.STRING(20)
+  qualityGrade: {
+    type: DataTypes.ENUM('A', 'B', 'C') ,
+    allowNull: false,
+    field: 'quality_grade'     
   },
-  date_listed: {
+  dateListed: {
     type: DataTypes.DATEONLY,
-    defaultValue: DataTypes.NOW
+    defaultValue: DataTypes.NOW,
+    field: 'date_listed'
   },
-  is_approved_for_auction: {
+  isApprovedForAuction: {
     type: DataTypes.BOOLEAN,
-    defaultValue: false
+    defaultValue: false,
+    field: 'is_approved_for_auction'
   },
   certification: {
     type: DataTypes.TEXT
   },
-  approved_by_admin_id: {
-    type: DataTypes.INTEGER
+  approvedByAdminId: {
+    type: DataTypes.INTEGER,
+    field: 'approved_by_admin_id'
   },
   notes: {
     type: DataTypes.TEXT

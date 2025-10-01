@@ -1,3 +1,5 @@
+const {Crop,Auction} = require("../../database/models/relationships");
+
 class CropService {
   static async addToAuction(params) {
 
@@ -25,7 +27,7 @@ class CropService {
     }
 
     // 4. Create auction entry
-    const auctionEntry = await AuctionModel.create({
+    const auctionEntry = await Auction.create({
       crop_id,
       base_price,
       start_time,
@@ -52,20 +54,20 @@ class CropService {
       const {
         farmerId,
         representativeId,
-        cropType = 'Not Specified',
-        quantityKg = 0,
-        qualityGrade = 'Standard',
-        certification = 'None',
+        cropType ,
+        quantityKg ,
+        qualityGrade ,
+        certification ,
         notes = ''
       } = params;
 
       // Create crop entry in database
-      const newCrop = await CropModel.create({
-        farmer_id: farmerId,
-        representative_id: representativeId,
-        crop_type: cropType,
-        quantity_kg: quantityKg,
-        quality_grade: qualityGrade,
+      const newCrop = await Crop.create({
+        farmerId: farmerId,
+        representativeId: representativeId,
+        cropType: cropType,
+        quantityKg: quantityKg,
+        qualityGrade: qualityGrade,
         certification: certification,
         notes: notes
       });
@@ -75,9 +77,9 @@ class CropService {
         success: true,
         message: 'Crop created successfully',
         data: {
-          id: newCrop.id,
-          farmerId: newCrop.farmer_id,
-          cropType: newCrop.crop_type,
+          id: newCrop.cropId,
+          farmerId: newCrop.farmerId,
+          cropType: newCrop.cropType,
           status: newCrop.status
         }
       };
@@ -93,6 +95,6 @@ class CropService {
     }
   }
 
-
+  static async getPendingCrops(adminId){}
 }
 module.exports = CropService;
