@@ -8,8 +8,8 @@ const Buyer = sequelize.define("Buyer", {
     field: "buyer_id"
   },
   buyerType: {
-    type: DataTypes.ENUM("individual", "company"),
-    allowNull: false,
+    type: DataTypes.ENUM("individual", "company","not set"),
+    defaultValue : "not set",
     field: "buyer_type"
   },
   companyName: {
