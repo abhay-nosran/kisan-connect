@@ -88,7 +88,7 @@ Bid.belongsTo(Auction,{foreignKey : 'auctionId'});
 // auction - buyer (one to one) (higgest bidder) 
 Buyer.hasOne(Auction,{
     foreignKey : {
-        name : 'higgestBidder',
+        name : 'highestBidder',
         field : 'highest_bidder',
         allowNull : true
     },

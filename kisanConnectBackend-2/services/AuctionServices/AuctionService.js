@@ -37,13 +37,19 @@ class AuctionService {
     // to fetch a particular auction by auctionId
     static async fetchAuctionById(auctionId){
         try {
-            const auction = await Auction.findByPk(autionId) ;
+            const auction = await Auction.findByPk(auctionId) ;
             if(!auction){
-                throw new Error("Auction not found with id: " + autionId);
+                const err = new Error("Auction not found with id: " + auctionId);
+                err.name = "AuctionIdInValid" ;
+                throw err ;
             }
             return auction  ;
         }catch(err){
-            throw new Error("Error fetching auction by id: " + err.message);
+
+            if(err.name !== "AuctionIdInValid"){
+                console.log("Error in fetching Auction : ",err) ;
+            }
+            throw err
         }
     }
 
@@ -105,8 +111,9 @@ class AuctionService {
     }
 }
 
-module.exports = {AuctionService} ;
+module.exports = AuctionService ;
 
 
 
 
+ 

@@ -8,11 +8,13 @@ const port = process.env.PORT || 3000
 const AuctionController = require('./controllers/Auction/AuctionController');
 const CropController = require('./controllers/Crop/CropController')
 const LoginController = require('./controllers/Login-Signup/LoginController');
+const BiddingController = require('./controllers/Bidding/BiddingController')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const signup = require('./routes/signup')
+
 
 
 // signup and login routes
@@ -37,6 +39,8 @@ app.get("/crops/pending/:adminId",CropController.getPendingCrops);
 // add crop to auction
 app.post("/crops/add-to-auction",CropController.addToAuction);
 
+// to place a bid 
+app.post("/placeBid",BiddingController.placeBid)
 
 
 app.listen(port, async () => {
