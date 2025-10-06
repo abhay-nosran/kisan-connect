@@ -85,7 +85,7 @@ Auction.hasMany(Bid,{
     })
 Bid.belongsTo(Auction,{foreignKey : 'auctionId'});
 
-// auction - buyer (one to one) (higgest bidder) 
+// auction - buyer (one to one) (highest bidder) 
 Buyer.hasOne(Auction,{
     foreignKey : {
         name : 'highestBidder',
@@ -95,7 +95,7 @@ Buyer.hasOne(Auction,{
     onDelete : 'SET NULL',
     onUpdate : 'CASCADE'
 })
-Auction.belongsTo(Buyer,{foreignKey : 'higgestBidder'});
+Auction.belongsTo(Buyer,{foreignKey : 'highestBidder'});
 
 // crop - auction (one to one) (crop can exist without auction but auction cannot exist without crop)
     // crop_id in auctions table

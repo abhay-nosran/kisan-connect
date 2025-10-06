@@ -34,7 +34,14 @@ const Auction = sequelize.define('Auction',{
         defaultValue : 0.00,
         field : 'highest_bid'
     },
+    
     // highest_bidder_id foreign key to be added 
-})
+},
+{
+    tableName: "auctions", // maps to your DB table
+    timestamps: false, // no createdAt/updatedAt in your table
+    underscored: true, // if you add timestamps later → created_at, updated_at
+  }
+)
 
 module.exports = Auction  ;
