@@ -1,0 +1,19 @@
+{
+  "name": "cronjob",
+  "version": "1.0.0",
+  "description": "Handle the cron job to update the db and push notifications to the redis",
+  "license": "ISC",
+  "author": "Abhay",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "ioredis": "^5.8.1",
+    "node-cron": "^4.2.1",
+    "pg": "^8.16.3"
+  }
+}
