@@ -1,38 +1,65 @@
-const  Auction = require('../../database/models/Auction');
-const Bid = require('../../database/models/Bid');
-const {sequelize} = require('../../database/models/relationships');
+const  {Auction , Crop , Bid , sequelize} = require('../../database/models/relationships');
+const {Op} = require("sequelize")
 
 class AuctionService {
     
     // to fetch all auction {filters have page , limit , qualityGrade , location , isLive}
-    static async fetchAuctions(filters) {
-        const {page , limit , qualityGrade , location , isLive} = filters ;
-        
-        const whereClause = {} ;
-        if(qualityGrade){
-            whereClause.qualityGrade = qualityGrade ;
-        }
-        if(location){
-            whereClause.location = location ;
-        }
-        if(isLive !== null){
-            whereClause.status = isLive ? 'live' : 'closed' ;
-        }
+static async fetchAuctions(filters) {
+    const { page, limit, qualityGrades, locations, isLive, minQuantity, maxQuantity } = filters;
 
-        const offset = (page - 1) * limit ;
+    console.log(filters) ;
 
-        try {
-            const auctions = await Auction.findAndCountAll({
-                where : whereClause ,
-                limit: parseInt(limit),
-                offset: parseInt(offset),
-                order: [['createdAt', 'DESC']]})
-
-                return auctions = auctions.rows ; 
-        }catch(err){
-            throw new Error("Error fetching auctions: " + err.message);
-        }
+    const whereClause = {};
+   
+    if (isLive !== null) {
+        whereClause.status = isLive ? "live" : "closed";
     }
+
+    const offset = (page - 1) * limit;
+
+    // Build where condition for Crop in the include
+    const cropWhere = {};
+    
+    if (minQuantity !== null && maxQuantity !== null) {
+        if(minQuantity > maxQuantity){
+            let error = new Error("maxQuantity should be greater than minQuantity");
+            error.name = "Bad_Request" ;
+            throw error ;
+        }
+        cropWhere.quantityKg = { [Op.between]: [minQuantity, maxQuantity] };
+    } else if (minQuantity !== null) {
+        cropWhere.quantityKg = { [Op.gte]: minQuantity };
+    } else if (maxQuantity !== null) {
+        cropWhere.quantityKg = { [Op.lte]: maxQuantity };
+    }
+
+    if (qualityGrades && qualityGrades.length > 0) {
+        cropWhere.qualityGrade = { [Op.in]: qualityGrades };
+    }
+    if (locations && locations.length > 0) {
+        cropWhere.location = { [Op.in]: locations };
+    }
+    try {
+        let auctions = await Auction.findAndCountAll({
+            where: whereClause,
+            limit: limit,
+            offset: offset,
+            include: [
+                {
+                    model: Crop,
+                    required: true,
+                    attributes: ["cropType", "quantityKg", "qualityGrade"],
+                    where: Object.keys(cropWhere).length ? cropWhere : undefined
+                }
+            ]
+        });
+
+        return auctions.rows;
+    } catch (err) {
+        throw new Error("Error fetching auctions: " + err.message);
+    }
+}
+
 
     // to fetch a particular auction by auctionId
     static async fetchAuctionById(auctionId){

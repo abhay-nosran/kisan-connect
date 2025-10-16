@@ -9,8 +9,8 @@ class BiddingController {
 
     // req is post with body containing {auctionId, buyerId, bidAmount}
     static async  placeBid (req,res) {
-        let {auctionId , buyerId , bidAmount} = req.body;
-        
+        let {auctionId , bidAmount} = req.body;
+        let buyerId = req.decoded.roleId ;
         if(!auctionId || !buyerId || !bidAmount) {
             return res.status(400).send({message : "Missing required fields"});
         }

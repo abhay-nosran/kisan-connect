@@ -1,11 +1,12 @@
 const express = require('express')
 const app = express()
+const cors = require("cors")
 require('dotenv').config()
 const syncDatabase = require('./database/dbCreation')
 // const {testConnection} = require('./database/dbConnection')
 const port = process.env.PORT || 3000 
+app.use(cors())
 
-const AuctionController = require('./controllers/Auction/AuctionController');
 const CropController = require('./controllers/Crop/CropController')
 const LoginController = require('./controllers/Login-Signup/LoginController');
 const BiddingController = require('./controllers/Bidding/BiddingController')
@@ -14,21 +15,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const signup = require('./routes/signup')
-
+const buyer = require('./routes/buyer')
 
 
 // signup and login routes
-app.post("/auth/login",LoginController.loginUser);
+app.post("/login",LoginController.loginUser);
+
 app.use('/signup',signup)
 
-// get auctions based on query filters  
-app.get("/auctions",AuctionController.getAuctionAll);
-
-// get a specific auction by id
-app.get("/auctions/:auctionId",AuctionController.getAuctionById);
-
-// get auctions for a specific buyer
-app.get("/auctions/buyer/:buyerId",AuctionController.getAuctionBuyer);
+app.use('/buyer',buyer) 
 
 // create crop 
 app.post("/crops/create-crop",CropController.createCrop);
@@ -39,8 +34,7 @@ app.get("/crops/pending/:adminId",CropController.getPendingCrops);
 // add crop to auction
 app.post("/crops/add-to-auction",CropController.addToAuction);
 
-// to place a bid 
-app.post("/placeBid",BiddingController.placeBid)
+
 
 
 app.listen(port, async () => {

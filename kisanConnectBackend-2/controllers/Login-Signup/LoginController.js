@@ -18,7 +18,7 @@ class LoginController {
         const status = response.status || 500 ;
         delete response.status ; // remove status from response object
         res.status(status).json(response) ;
-
+        
     }
 }
 
