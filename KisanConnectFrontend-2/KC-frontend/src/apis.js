@@ -1,7 +1,4 @@
-import axios from "axios";
-import { url } from "./config.js";
-
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsInJvbGUiOiJidXllciIsInJvbGVJZCI6MSwiaWF0IjoxNzYwNjE1NzgwLCJleHAiOjE3NjA2MTkzODB9.GNRdQ9d2Ga36B11RaQCqjxCVACJg0KHkC1IL-VV2niM";
+import api from "./config.js";
 
 export async function getAuctions(filter) {
   try {
@@ -29,8 +26,9 @@ export async function getAuctions(filter) {
     if (Array.isArray(filter.qualityGrades) && filter.qualityGrades.length > 0)
       params.qualityGrades = JSON.stringify(filter.qualityGrades);
 
+    const token = localStorage.token 
     // Make GET request with Authorization header
-    const response = await axios.get(`${url}buyer/auctions`, {
+    const response = await api.get("buyer/auctions", {
       params,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -57,5 +55,20 @@ export async function getAuctions(filter) {
   }
 }
 
+export async function login(email,password){
 
+  try{
+    const response = await api.post("login",{email:email,password:password});
+
+    // extract token , user 
+    const {token , user} = response.data ;
+
+    localStorage.setItem("token",token) ;
+    localStorage.setItem("user",JSON.stringify(user)) ;
+
+    return {success : true , user} ;
+  }catch(err){
+    return {success : false , error : err.response?.data?.message || "Login failed"}
+  }
+}
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { url } from "../config";
+import { login } from "./../apis";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,25 +12,32 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${url}login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const result = await login(email, password);
 
-      const data = await res.json();
+      if (result.success === true) {
+        const userType = result.user.role;
 
-      if (!res.ok) {
-        setError(data.message || "Login failed");
-        return;
+        // ✅ Navigate based on role
+        switch (userType) {
+          case "buyer":
+            navigate("/buyer");
+            break;
+          case "farmer":
+            navigate("/farmer");
+            break;
+          case "representative":
+            navigate("/representative");
+            break;
+          case "admin":
+            navigate("/admin");
+            break;
+          default:
+            navigate("/");
+            break;
+        }
+      } else {
+        setError(result.error || "Invalid credentials. Please try again.");
       }
-
-      // ✅ Save JWT token in localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userDetails", data.user)
-
-      // redirect to buyer dashboard or home page
-      navigate("/buyer");
     } catch (err) {
       setError("Something went wrong. Please try again.");
     }
@@ -80,7 +87,10 @@ export default function Login() {
 
         <p className="text-sm text-center text-gray-600 mt-4">
           Don’t have an account?{" "}
-          <a href="/signup" className="text-[#458448] font-semibold hover:underline">
+          <a
+            href="/signup"
+            className="text-[#458448] font-semibold hover:underline"
+          >
             Sign up
           </a>
         </p>

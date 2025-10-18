@@ -15,7 +15,7 @@ export default function Grade({ selectedGrade, setSelectedGrade }) {
   };
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-sm w-fit">
+    <div className="p-4 rounded-xl shadow-sm">
       {/* Header */}
       <div
         className="flex justify-between items-center cursor-pointer"

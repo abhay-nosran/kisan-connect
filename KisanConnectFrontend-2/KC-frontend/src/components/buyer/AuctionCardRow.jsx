@@ -4,16 +4,20 @@ import GradeIcon from "../../assets/GradeIcon.svg"
 export default function AuctionCardRow({ auction }) {
   const {
     image,
-    cropName,
-    location,
-    grade,
-    quantity,
     auctionId,
     basePrice,
-    currentPrice,
-    auctionEndTime,
   } = auction;
 
+  let currentPrice = parseFloat(auction.highestBid) ;
+  if(currentPrice == 0){
+    currentPrice = basePrice
+  }
+
+  const auctionEndTime = auction.endTime;
+  const cropName = auction.Crop.cropType ;
+  const grade = auction.Crop.qualityGrade ;
+  const quantity = auction.Crop.quantityKg ;
+  const location = auction.Crop.location ;
   const [expiresIn, setExpiresIn] = useState("");
 
   const unit = "Quintal"
@@ -51,7 +55,7 @@ export default function AuctionCardRow({ auction }) {
   }, [auctionEndTime]);
 
   return (
-    <div className="flex bg-white rounded-2xl shadow-md overflow-hidden w-full max-w-5xl mx-auto border">
+    <div className="flex bg-white rounded-2xl shadow-md overflow-hidden w-full min-h-[180px] max-w-4xl mx-auto border">
       {/* Left: Image */}
       <div className="w-1/3">
         <img
