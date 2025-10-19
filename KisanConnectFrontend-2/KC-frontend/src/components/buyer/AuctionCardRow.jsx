@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import MapPinIcon from "../../assets/MapPinIcon.svg";
 import GradeIcon from "../../assets/GradeIcon.svg"
-export default function AuctionCardRow({ auction }) {
+export default function AuctionCardRow({ auction , setPlaceBidPopup , popupDetails}) {
   const {
     image,
     auctionId,
     basePrice,
+    status
   } = auction;
 
   let currentPrice = parseFloat(auction.highestBid) ;
@@ -54,6 +55,23 @@ export default function AuctionCardRow({ auction }) {
     return () => clearInterval(interval);
   }, [auctionEndTime]);
 
+  function handleViewDetails(){
+    // view details has been clicked (open the popup) 
+    alert("View Details to be Implemented") 
+  }
+
+  function handlePlaceBid(){
+    // place bid has been clicked (open the popup) 
+
+    // update the popup values 
+    popupDetails.current = {}
+    popupDetails.current.cropName = cropName ;
+    popupDetails.current.currentPrice = currentPrice ; 
+    popupDetails.current.auctionId = auctionId ;
+
+    // render the popup
+    setPlaceBidPopup(true) ;
+  }
   return (
     <div className="flex bg-white rounded-2xl shadow-md overflow-hidden w-full min-h-[180px] max-w-4xl mx-auto border">
       {/* Left: Image */}
@@ -116,11 +134,19 @@ export default function AuctionCardRow({ auction }) {
             </div>
         
             <div className="flex space-x-3">
-                <button className="border border-green-700 text-green-700 px-4 py-1 rounded-lg hover:bg-green-50 transition">
+                <button className="border border-green-700 text-green-700 px-4 py-1 rounded-lg hover:bg-green-50 transition" onClick={handleViewDetails}>
                     View Details →
                 </button>
-                <button className="bg-green-700 text-white px-4 py-1 rounded-lg hover:bg-green-800 transition">
-                    Bid
+                <button
+                  className={`px-4 py-1 rounded-lg font-semibold transition 
+                    ${status === "closed"
+                      ? "bg-gray-400 text-white cursor-not-allowed"
+                      : "bg-green-700 text-white hover:bg-green-800"}
+                  `}
+                  onClick={handlePlaceBid}
+                  disabled={status === "closed"}
+                >
+                  Bid
                 </button>
             </div>
         </div>

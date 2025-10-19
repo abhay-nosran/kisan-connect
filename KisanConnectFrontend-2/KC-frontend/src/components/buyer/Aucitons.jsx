@@ -3,6 +3,7 @@ import ActivityBar from "./ActivityBar";
 import AuctionCardRow from "./AuctionCardRow";
 import Filter from "./filter/Filters";
 import {getAuctions} from "../../apis"
+import PlaceBidPopup from "./PlaceBidPopup";
 
 function Auctions(){
     const [selectedGrade, setSelectedGrade] = useState([]);
@@ -12,7 +13,14 @@ function Auctions(){
     const totalPages = useRef(10) ; // object
     const [submitClicked,setSubmitClicked] = useState(false) ;
     const [auctions,setAuctions] = useState([]) ;
+    const [placeBidPopup , setPlaceBidPopup] = useState(false) ;
+    const popupDetails = useRef({
+        cropName : "Dummy" ,
+        currentPrice : 0 ,
+        auctionId : 0 
+    }) ;
 
+    console.log("Auction Re-rendered !")
     useEffect(()=>{
        if(submitClicked){
         const fetchAuctions = async () => {
@@ -45,6 +53,8 @@ function Auctions(){
     useEffect(()=>{
 
         async function fetchAuctions() {
+
+            
             try{
             const filter = {
                 page: currentPage,
@@ -60,6 +70,10 @@ function Auctions(){
             }catch(err){
                 console.error("Error fetching auctions:", err);
             }
+
+            // subscribe to broadcast service 
+
+            
         }
         fetchAuctions() 
     },[])
@@ -75,12 +89,13 @@ function Auctions(){
                     {/* <AuctionCardRow auction={mockAuction}/> */}
                     {auctions.length > 0 ?
                         auctions.map((auction)=>{
-                            return <AuctionCardRow key={auction.auctionId} auction={auction}/>
+                            return <AuctionCardRow key={auction.auctionId} auction={auction} setPlaceBidPopup={setPlaceBidPopup} popupDetails = {popupDetails}/>
                         })
                      :  <div>No Auctions Available</div>
                      }
                 </div>
             </div>
+            {placeBidPopup ? <PlaceBidPopup setPlaceBidPopup={setPlaceBidPopup} popupDetails={popupDetails} /> : <div></div>}
         </div>
     )
 }

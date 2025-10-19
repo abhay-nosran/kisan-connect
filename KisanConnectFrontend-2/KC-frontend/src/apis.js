@@ -29,10 +29,10 @@ export async function getAuctions(filter) {
     const token = localStorage.token 
     // Make GET request with Authorization header
     const response = await api.get("buyer/auctions", {
-      params,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      params
+      // headers: {
+      //   Authorization: `Bearer ${token}`,
+      // },
     });
 
     return response.data; // array of object 
@@ -72,3 +72,26 @@ export async function login(email,password){
   }
 }
 
+export async function placeBid(auctionId, bidAmount) {
+  
+  
+  try {
+    const response = await api.post("buyer/placeBid",{
+      auctionId : auctionId ,
+      bidAmount : bidAmount 
+    })
+
+    return {success : true}
+
+  } catch (error) {
+    return {success : false , error : error.response?.data?.message || "Bid not placed"}
+  }
+}
+
+export async function subscribe() {
+    try {
+     
+    } catch (error) {
+      
+    }
+}
