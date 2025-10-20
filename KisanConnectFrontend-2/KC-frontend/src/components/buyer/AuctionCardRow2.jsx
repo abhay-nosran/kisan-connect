@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React , { useState, useEffect} from "react";
 import MapPinIcon from "../../assets/MapPinIcon.svg";
 import GradeIcon from "../../assets/GradeIcon.svg"
 import Countdown from "./CountDown";
@@ -6,7 +6,7 @@ import AnimatedPrice from "./AnimatedPrice";
 
 const unit = "Quintal"
 
-export default function AuctionCardRow({ auction , setPlaceBidPopup , popupDetails}) {
+const AuctionCardRow2 = React.memo(({ auction , setPlaceBidPopup , popupDetails , registerHandler}) => {
   const {
     image,
     auctionId,
@@ -14,10 +14,14 @@ export default function AuctionCardRow({ auction , setPlaceBidPopup , popupDetai
     status
   } = auction;
 
-  let currentPrice = parseFloat(auction.highestBid) ;
-  if(currentPrice == 0){
-    currentPrice = basePrice
-  }
+  const [currentPrice, setCurrentPrice] = useState(
+  Math.max(parseFloat(auction.highestBid), parseFloat(basePrice))
+);
+
+
+  useEffect(()=>{
+    registerHandler(auctionId , setCurrentPrice) ;
+  },[])
 
   const auctionEndTime = auction.endTime;
   const cropName = auction.Crop.cropType ;
@@ -119,4 +123,6 @@ export default function AuctionCardRow({ auction , setPlaceBidPopup , popupDetai
       </div>
     </div>
   );
-}
+})
+
+export default AuctionCardRow2

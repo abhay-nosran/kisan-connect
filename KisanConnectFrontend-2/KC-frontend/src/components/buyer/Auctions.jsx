@@ -4,6 +4,7 @@ import AuctionCardRow from "./AuctionCardRow";
 import Filter from "./filter/Filters";
 import {getAuctions} from "../../apis"
 import PlaceBidPopup from "./PlaceBidPopup";
+import {subscribe} from "../../apis"
 
 function Auctions(){
     const [selectedGrade, setSelectedGrade] = useState([]);
@@ -14,13 +15,14 @@ function Auctions(){
     const [submitClicked,setSubmitClicked] = useState(false) ;
     const [auctions,setAuctions] = useState([]) ;
     const [placeBidPopup , setPlaceBidPopup] = useState(false) ;
+
     const popupDetails = useRef({
         cropName : "Dummy" ,
         currentPrice : 0 ,
         auctionId : 0 
     }) ;
 
-    console.log("Auction Re-rendered !")
+    // console.log("Auction Re-rendered !")
     useEffect(()=>{
        if(submitClicked){
         const fetchAuctions = async () => {
@@ -34,9 +36,9 @@ function Auctions(){
                 maxPrice: priceRange[1],
                 qualityGrades: selectedGrade,
             };
-            console.log(filter)
+            // console.log(filter)
             const auctions = await getAuctions(filter);
-            console.log("Fetched Auctions:", auctions);
+            // console.log("Fetched Auctions:", auctions);
             setAuctions(auctions)
 
             } catch (err) {
@@ -51,10 +53,9 @@ function Auctions(){
     },[submitClicked])
 
     useEffect(()=>{
-
+        let eventSource ;
         async function fetchAuctions() {
 
-            
             try{
             const filter = {
                 page: currentPage,
@@ -72,10 +73,32 @@ function Auctions(){
             }
 
             // subscribe to broadcast service 
-
-            
         }
-        fetchAuctions() 
+        async function handleSubscribe() {
+            eventSource = await subscribe();
+           
+            eventSource.addEventListener("message",(event)=>{
+
+                if(event.data === "Connected to server"){
+                    // console.log("Connected to Server")
+                    return ;
+                }
+                const message = JSON.parse(event.data) ;
+                // console.log(message.auctionId , message.currentPrice)
+                setAuctions((prevAuctions)=>
+                    prevAuctions.map((auction)=>
+                    Number(auction.auctionId) === Number(message.auctionId) ?{...auction,highestBid : message.currentPrice} : auction))
+            })
+        }
+        fetchAuctions() ;
+        handleSubscribe() ;
+
+        return ()=>{
+            if(eventSource){
+                eventSource.close();
+                console.log("SSE connection closed");
+            }
+        }
     },[])
 
     // console.log(selectedGrade," ",currentPage," ",quantityRange[0] , quantityRange[1])

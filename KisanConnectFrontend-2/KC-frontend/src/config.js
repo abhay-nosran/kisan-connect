@@ -1,13 +1,17 @@
 // axiosConfig.js
 import axios from "axios";
-const Token = localStorage.getItem("token") || "dummy" ;
-const api = axios.create({
+
+export  const api = axios.create({
   baseURL: "http://localhost:5000/",
 });
 
+export const subscribeMircroSerice = axios.create({
+  baseURL : "localhost:3333/"
+})
 // request interceptor 
 api.interceptors.request.use(
   (config) =>{
+    const Token = localStorage.getItem("token") || "dummy" ;
     config.headers.Authorization = `Bearer ${Token}`;
     return config ;
   },
@@ -28,4 +32,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+

@@ -4,7 +4,7 @@ import { BrowserRouter, Route ,Routes} from "react-router";
 import Buyer from "./components/buyer/Buyer"
 import LandingPage from './components/LandingPage';
 import Login from './components/Login';
-import Auctions from './components/buyer/Aucitons'
+import Auctions from './components/buyer/Auctions'
 import MyAuctions from './components/buyer/MyAuctions';
 import History from './components/buyer/History';
 import ProtectedRoute from './components/ProtectedRoute';

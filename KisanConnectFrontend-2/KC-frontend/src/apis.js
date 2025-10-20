@@ -1,4 +1,4 @@
-import api from "./config.js";
+import {api , subscribeMircroSerice} from "./config.js";
 
 export async function getAuctions(filter) {
   try {
@@ -89,9 +89,23 @@ export async function placeBid(auctionId, bidAmount) {
 }
 
 export async function subscribe() {
-    try {
-     
-    } catch (error) {
-      
-    }
+  try {
+    // Create an EventSource to your microservice endpoint
+    const eventSource = new EventSource("http://localhost:3333/subscribe");
+
+    eventSource.addEventListener("open",()=>{
+      console.log("Connected to SSE stream ✅");
+    })
+    
+    // Handle errors
+    eventSource.onerror = (error) => {
+      console.error("SSE connection error:", error);
+      eventSource.close(); // optional, close if you want to retry
+    };
+    
+    // Return eventSource so caller can close it later if needed
+    return eventSource;
+  } catch (error) {
+    console.error("Failed to subscribe:", error);
+  }
 }
