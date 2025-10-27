@@ -5,23 +5,31 @@ import Filter from "./filter/Filters";
 import {getAuctions} from "../../apis"
 import PlaceBidPopup from "./PlaceBidPopup";
 import {subscribe} from "../../apis"
+import ViewDetailsPopup from "./ViewDetailsPopup";
 
 function Auctions(){
-    const [selectedGrade, setSelectedGrade] = useState([]);
+    
     const [currentPage , setCurrentPage] = useState(1) ;
-    const [quantityRange,setQuantityRange] = useState([0,1000])
-    const [priceRange,setPriceRange] = useState([0,10000])
     const totalPages = useRef(10) ; // object
     const [submitClicked,setSubmitClicked] = useState(false) ;
     const [auctions,setAuctions] = useState([]) ;
-    const [placeBidPopup , setPlaceBidPopup] = useState(false) ;
 
     const popupDetails = useRef({
         cropName : "Dummy" ,
         currentPrice : 0 ,
-        auctionId : 0 
+        auctionId : 0 ,
     }) ;
 
+    const refFilters = useRef({
+        quantityRange : [0,1000] ,
+        priceRange : [0,10000] ,
+        selectedGrade : [] 
+    })
+
+    const refStateHandler = useRef(()=>{console.log("Default")}) ;
+    const refViewDetailsHandler = useRef(()=>{console.log("View Details")}) ;
+
+    const refCurrentPriceHandlers = useRef({})
     // console.log("Auction Re-rendered !")
     useEffect(()=>{
        if(submitClicked){
@@ -30,11 +38,11 @@ function Auctions(){
             const filter = {
                 page: currentPage,
                 limit: 10,
-                minQuantity: quantityRange[0],
-                maxQuantity: quantityRange[1],
-                minPrice: priceRange[0],
-                maxPrice: priceRange[1],
-                qualityGrades: selectedGrade,
+                minQuantity: refFilters.current.quantityRange[0],
+                maxQuantity: refFilters.current.quantityRange[1],
+                minPrice: refFilters.current.priceRange[0],
+                maxPrice: refFilters.current.priceRange[1],
+                qualityGrades: refFilters.current.selectedGrade,
             };
             // console.log(filter)
             const auctions = await getAuctions(filter);
@@ -58,13 +66,13 @@ function Auctions(){
 
             try{
             const filter = {
-                page: currentPage,
+               page: currentPage,
                 limit: 10,
-                minQuantity: quantityRange[0],
-                maxQuantity: quantityRange[1],
-                minPrice: priceRange[0],
-                maxPrice: priceRange[1],
-                qualityGrades: selectedGrade,
+                minQuantity: refFilters.current.quantityRange[0],
+                maxQuantity: refFilters.current.quantityRange[1],
+                minPrice: refFilters.current.priceRange[0],
+                maxPrice: refFilters.current.priceRange[1],
+                qualityGrades: refFilters.current.selectedGrade,
             };
             const auctions = await getAuctions(filter);
             setAuctions(auctions) ;
@@ -80,14 +88,14 @@ function Auctions(){
             eventSource.addEventListener("message",(event)=>{
 
                 if(event.data === "Connected to server"){
-                    // console.log("Connected to Server")
+                    console.log("Connected to Server")
                     return ;
                 }
                 const message = JSON.parse(event.data) ;
                 // console.log(message.auctionId , message.currentPrice)
-                setAuctions((prevAuctions)=>
-                    prevAuctions.map((auction)=>
-                    Number(auction.auctionId) === Number(message.auctionId) ?{...auction,highestBid : message.currentPrice} : auction))
+                if(refCurrentPriceHandlers.current[message.auctionId]){
+                    refCurrentPriceHandlers.current[message.auctionId](message.currentPrice)
+                }
             })
         }
         fetchAuctions() ;
@@ -107,18 +115,19 @@ function Auctions(){
         <div className="m-2">
             <ActivityBar currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages = {totalPages} />
             <div className="flex justify-evenly">
-                <Filter selectedGrade = {selectedGrade} setSelectedGrade = {setSelectedGrade} quantityRange={quantityRange} setQuantityRange={setQuantityRange} setPriceRange={setPriceRange} setSubmitClicked = {setSubmitClicked}/>
+                <Filter refFilters = {refFilters} setSubmitClicked = {setSubmitClicked}/>
                 <div className="w-3/4 space-y-4">
                     {/* <AuctionCardRow auction={mockAuction}/> */}
                     {auctions.length > 0 ?
                         auctions.map((auction)=>{
-                            return <AuctionCardRow key={auction.auctionId} auction={auction} setPlaceBidPopup={setPlaceBidPopup} popupDetails = {popupDetails}/>
+                            return <AuctionCardRow key={auction.auctionId} auction={auction} refViewDetailsHandler={refViewDetailsHandler} refStateHandler={refStateHandler} popupDetails = {popupDetails} refCurrentPriceHandlers = {refCurrentPriceHandlers}/>
                         })
                      :  <div>No Auctions Available</div>
                      }
                 </div>
             </div>
-            {placeBidPopup ? <PlaceBidPopup setPlaceBidPopup={setPlaceBidPopup} popupDetails={popupDetails} /> : <div></div>}
+            <PlaceBidPopup popupDetails={popupDetails} refStateHandler={refStateHandler}/>
+            <ViewDetailsPopup popupDetails={popupDetails} refViewDetailsHandler={refViewDetailsHandler}/>
         </div>
     )
 }

@@ -6,18 +6,14 @@ import AnimatedPrice from "./AnimatedPrice";
 
 const unit = "Quintal"
 
-export default function AuctionCardRow({ auction , setPlaceBidPopup , popupDetails}) {
+export default function AuctionCardRow({ auction , refStateHandler , refViewDetailsHandler , popupDetails , refCurrentPriceHandlers}) {
   const {
     image,
     auctionId,
     basePrice,
     status
   } = auction;
-
-  let currentPrice = parseFloat(auction.highestBid) ;
-  if(currentPrice == 0){
-    currentPrice = basePrice
-  }
+  const [currentPrice , setCurrentPrice] = useState(Math.max(parseFloat(auction.highestBid),parseFloat(basePrice)))
 
   const auctionEndTime = auction.endTime;
   const cropName = auction.Crop.cropType ;
@@ -28,13 +24,18 @@ export default function AuctionCardRow({ auction , setPlaceBidPopup , popupDetai
   
   console.log("Auction Card Redereded " , auctionId)
   function handleViewDetails(){
+    popupDetails.current = {}
+    popupDetails.current.cropName = cropName ;
+    popupDetails.current.currentPrice = currentPrice ; 
+    popupDetails.current.auctionId = auctionId ;
+
+    refViewDetailsHandler.current(true) ;
     // view details has been clicked (open the popup) 
-    alert("View Details to be Implemented") 
+    // alert("View Details to be Implemented") 
   }
 
   function handlePlaceBid(){
     // place bid has been clicked (open the popup) 
-
     // update the popup values 
     popupDetails.current = {}
     popupDetails.current.cropName = cropName ;
@@ -42,8 +43,19 @@ export default function AuctionCardRow({ auction , setPlaceBidPopup , popupDetai
     popupDetails.current.auctionId = auctionId ;
 
     // render the popup
-    setPlaceBidPopup(true) ;
+    refStateHandler.current(true) ;
   }
+
+  function changeCurrentPrice(value){
+    setCurrentPrice(value) ;
+  }
+  useEffect(()=>{
+    refCurrentPriceHandlers.current[auctionId] = changeCurrentPrice ;
+
+    return ()=>{
+      refCurrentPriceHandlers.current[auctionId] = null 
+    }
+  },[])
   return (
     <div className="flex bg-white rounded-2xl shadow-md overflow-hidden w-full min-h-[180px] max-w-4xl mx-auto border">
       {/* Left: Image */}

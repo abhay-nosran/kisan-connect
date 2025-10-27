@@ -9,7 +9,7 @@ import MyAuctions from './components/buyer/MyAuctions';
 import History from './components/buyer/History';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProtectedRouteBuyer from './components/buyer/ProtectedRouteBuyer';
-
+import ProfilePage from './components/buyer/Profile/ProfilePage';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -20,6 +20,7 @@ createRoot(document.getElementById('root')).render(
               <Route index element = {<Auctions/>} />
               <Route path='my-auctions' element = {<MyAuctions/>} />
               <Route path='history' element = {<History/>}/>
+              <Route path="profile" element = {<ProfilePage/>} />
             </Route>
       </Routes>
     </BrowserRouter>

@@ -109,3 +109,34 @@ export async function subscribe() {
     console.error("Failed to subscribe:", error);
   }
 }
+
+
+// src/apis/index.js
+// dummy 
+export async function getDetails(auctionId) {
+  console.log("Fetching details for auction:", auctionId);
+
+  // Simulate a small network delay
+  await new Promise((resolve) => setTimeout(resolve, 1200));
+
+  // Mocked auction details
+  return {
+    auctionId,
+    basePrice: 5200,
+    startTime: "2025-10-27T12:30:00Z",
+    endTime: "2025-10-28T12:30:00Z",
+    status: "active",
+    highestBid: 6350,
+    highestBidder: "buyer_42",
+    crops: {
+      cropType: "Wheat",
+      quantityKg: 1800,
+      qualityGrade: "A+",
+      certification:
+        "https://example.com/sample-certification.pdf",
+      farmers: {
+        location: "Rewari, Haryana",
+      },
+    },
+  };
+}

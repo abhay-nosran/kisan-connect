@@ -1,21 +1,33 @@
 import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
-import {placeBid} from "../../apis"
+import { placeBid } from "../../apis";
 
-export default function PlaceBidPopup({ popupDetails, setPlaceBidPopup }) {
+export default function PlaceBidPopup({ popupDetails, refStateHandler }) {
   const [bidAmount, setBidAmount] = useState("");
   const modalRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [showPortal, setShowPortal] = useState(false); // only render portal when true
 
-  // Fade-in animation
+  // function to control visibility
+  function changeState(value) {
+    if (value) {
+      setShowPortal(true); // mount the portal
+      setTimeout(() => setIsVisible(true), 10); // fade in animation
+    } else {
+      setIsVisible(false); // fade out
+      setTimeout(() => setShowPortal(false), 200); // unmount portal after animation
+    }
+  }
+
+  // expose changeState to parent via ref
   useEffect(() => {
-    setIsVisible(true);
-  }, []);
+    refStateHandler.current = changeState;
+  }, [refStateHandler]);
 
   // Close when clicking outside
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
-      closePopup();
+      changeState(false);
     }
   };
 
@@ -24,29 +36,35 @@ export default function PlaceBidPopup({ popupDetails, setPlaceBidPopup }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const closePopup = () => {
-    setIsVisible(false);
-    setTimeout(() => setPlaceBidPopup(false), 200); // match animation duration
-  };
-
   const handleSubmit = async () => {
+    const minBid = (popupDetails.current?.currentPrice || 0) + 100;
+    const numericBid = Number(bidAmount);
 
-    const minBid = popupDetails.current.currentPrice + 100;
-    if (bidAmount < minBid) {
-      alert(`Your bid musdfasfaest be at least ₹${minBid}`);
+    if (isNaN(numericBid) || numericBid < minBid) {
+      alert(`❗ Your bid must be at least ₹${minBid}.`);
       return;
     }
-    // alert("Place Bid to be implemented");
-    const result = await placeBid(popupDetails.current.auctionId,bidAmount) ;
 
-    if(result.success){
-        alert("Bid Placed Successfully !") 
-    }else{
-        alert(result.error) ;
+    try {
+      const result = await placeBid(
+        popupDetails.current?.auctionId,
+        numericBid
+      );
+
+      if (result.success) {
+        alert("✅ Bid Placed Successfully!");
+        setBidAmount("");
+        changeState(false);
+      } else {
+        alert(`⚠️ ${result.error || "Failed to place bid"}`);
+      }
+    } catch (error) {
+      console.error("Error placing bid:", error);
+      alert("⚠️ Network or server error. Please try again.");
     }
-
-    closePopup() ;
   };
+
+  if (!showPortal) return null; // don’t render portal unless needed
 
   return createPortal(
     <div
@@ -71,20 +89,17 @@ export default function PlaceBidPopup({ popupDetails, setPlaceBidPopup }) {
           isVisible ? "scale-100" : "scale-95"
         }`}
       >
-        {/* Close Button */}
         <button
-          onClick={closePopup}
+          onClick={() => changeState(false)}
           className="absolute top-3 right-4 text-gray-600 hover:text-gray-800 text-2xl leading-none"
         >
           &times;
         </button>
 
-        {/* Title */}
         <h2 className="text-xl font-semibold text-center text-[#458448] mb-4">
           Place your Bid
         </h2>
 
-        {/* Info Section */}
         <div className="bg-[#fdf7ec] rounded-lg p-4 mb-3">
           <div className="flex justify-between mb-2">
             <span className="font-medium text-gray-700">Crop</span>
@@ -100,7 +115,6 @@ export default function PlaceBidPopup({ popupDetails, setPlaceBidPopup }) {
           </div>
         </div>
 
-        {/* Input */}
         <div className="mb-3">
           <label className="block text-gray-700 font-medium mb-1">
             Enter your Bid
@@ -114,13 +128,11 @@ export default function PlaceBidPopup({ popupDetails, setPlaceBidPopup }) {
           />
         </div>
 
-        {/* Disclaimer */}
         <p className="text-sm text-gray-500 mb-4">
           Disclaimer: Your bid must be at least ₹100 more than the current
           price. Lower bids won’t be accepted.
         </p>
 
-        {/* Submit Button */}
         <button
           onClick={handleSubmit}
           className="w-full bg-[#458448] hover:bg-[#3b6f3b] text-white py-2 rounded-lg font-semibold transition-colors"
