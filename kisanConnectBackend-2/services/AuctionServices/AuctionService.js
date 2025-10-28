@@ -1,4 +1,4 @@
-const  {Auction , Crop , Bid , sequelize} = require('../../database/models/relationships');
+const  {Auction , Crop , Bid , sequelize, Farmer} = require('../../database/models/relationships');
 const {Op} = require("sequelize")
 
 class AuctionService {
@@ -60,25 +60,49 @@ static async fetchAuctions(filters) {
     }
 }
 
+// to fetch a particular auction
+ static async fetchAuctionById(auctionId) {
+    try {
+        const auction = await Auction.findByPk(auctionId, {
+            include: [
+                {
+                    model: Crop,
+                    attributes: ["cropType", "quantityKg", "qualityGrade", "certification"],
+                    include: [
+                        {
+                            model: Farmer,
+                            attributes: ["location"], // only necessary fields
+                        }
+                    ]
+                }
+            ]
+        });
 
-    // to fetch a particular auction by auctionId
-    static async fetchAuctionById(auctionId){
-        try {
-            const auction = await Auction.findByPk(auctionId) ;
-            if(!auction){
-                const err = new Error("Auction not found with id: " + auctionId);
-                err.name = "AuctionIdInValid" ;
-                throw err ;
-            }
-            return auction  ;
-        }catch(err){
-
-            if(err.name !== "AuctionIdInValid"){
-                console.log("Error in fetching Auction : ",err) ;
-            }
-            throw err
+        if (!auction) {
+            return {
+                success: 0,
+                status: 404,
+                message: `Auction not found with id: ${auctionId}`,
+            };
         }
+
+        return {
+            success: 1,
+            status: 200,
+            auction,
+        };
+
+    } catch (err) {
+        console.error("Error in fetching Auction:", err); // log for debugging, not user response
+        return {
+            success: 0,
+            status: 500,
+            message: "Internal Server Error",
+            error: err.message, // optional: expose only message, not full error
+        };
     }
+}
+
 
     // to fetch all auction on which a buyer has placed a bid 
     static async fetchAuctionByBuyerId(filters,buyerId){
@@ -136,6 +160,28 @@ static async fetchAuctions(filters) {
 
         return auctions;
     }
+
+    static async getWonAuctionsBuyer(buyerId) {
+    try {
+        const auctions = await Auction.findAll({
+            where: {
+                status: "closed",
+                highestBidder: buyerId
+            },
+            include: [
+                {
+                    model: Crop,
+                    attributes: ["cropType", "quantityKg", "qualityGrade", "certification"]
+                }
+            ]
+        });
+
+        return auctions; // just return data
+    } catch (err) {
+        throw err; // let controller decide how to handle it
+    }
+}
+
 }
 
 module.exports = AuctionService ;

@@ -34,8 +34,9 @@ class AuctionController {
       return res.status(400).json({ error: "auctionId is required in params" });
     }
     try {
-        const auction = await AuctionService.fetchAuctionById(auctionId);
-        return res.status(200).json(auction);
+        const response = await AuctionService.fetchAuctionById(auctionId);
+        if(response.success === 1) return res.status(response.status).json(response.auction);
+        else return res.status(response.status).json({message : response.message}) ;
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -62,7 +63,30 @@ class AuctionController {
       return res.status(500).json({ error: err.message });
     }
   }
-  
+
+  // get all Won Auctions for a buyer 
+  static async getWonAuctionsBuyer(req, res) {
+    const buyerId = req.decoded.roleId;
+
+    try {
+        const auctions = await AuctionService.getWonAuctionsBuyer(buyerId);
+
+        return res.status(200).json({
+            success: 1,
+            auctions: auctions || []
+        });
+
+    } catch (err) {
+        console.error("Error fetching won auctions:", err);
+        return res.status(500).json({
+            success: 0,
+            message: "Internal Server Error",
+            error: err.message
+        });
+    }
+}
+
+
 
 }
 

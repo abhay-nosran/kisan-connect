@@ -3,7 +3,8 @@ const authenticateUser = require("../middlewares/authenticateUser");
 const authorizeUser = require("../middlewares/authorizeUser");
 
 const AuctionController = require("../controllers/Auction/AuctionController")
-const BiddingController = require("../controllers/Bidding/BiddingController")
+const BiddingController = require("../controllers/Bidding/BiddingController");
+const ProfileController = require("../controllers/Profile/ProfileController");
 
 const router = express.Router() ;
 
@@ -27,4 +28,9 @@ router.get("/auctions/buyer",authenticateUser,authorizeUser("buyer"),AuctionCont
 // buyer verification is required 
 router.post("/placeBid",authenticateUser,authorizeUser("buyer"),BiddingController.placeBid)
 
+// to get won auctions
+router.get("/auctions/won",authenticateUser,authorizeUser("buyer"),AuctionController.getWonAuctionsBuyer) ;
+
+// to get buyerInfo
+router.get("/",authenticateUser,authorizeUser("buyer"),ProfileController.getbuyerProfile)
 module.exports = router ;
