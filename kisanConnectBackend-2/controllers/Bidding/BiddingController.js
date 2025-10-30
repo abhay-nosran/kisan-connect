@@ -20,7 +20,7 @@ class BiddingController {
         bidAmount = parseInt(bidAmount)
         try{    
             
-            const response = await BiddingService.placeBid({auctionId, buyerId, bidAmount});
+            const response = await BiddingService.placeBid2({auctionId, buyerId, bidAmount});
             const status = response.status ;
             delete response.status ;
             return res.status(status).send(response);

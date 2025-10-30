@@ -60,6 +60,23 @@ static async fetchAuctions(filters) {
     }
 }
 
+static async fetchAuctionByIdInternal(auctionId){ // to be used internally will resolve in future
+        try {
+            const auction = await Auction.findByPk(auctionId) ;
+            if(!auction){
+                const err = new Error("Auction not found with id: " + auctionId);
+                err.name = "AuctionIdInValid" ;
+                throw err ;
+            }
+            return auction  ;
+        }catch(err){
+
+            if(err.name !== "AuctionIdInValid"){
+                console.log("Error in fetching Auction : ",err) ;
+            }
+            throw err
+        }
+    }
 // to fetch a particular auction
  static async fetchAuctionById(auctionId) {
     try {

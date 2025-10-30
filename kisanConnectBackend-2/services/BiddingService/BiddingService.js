@@ -1,6 +1,7 @@
 const { sequelize , Bid , Auction} = require("../../database/models/relationships");
 const AuctionService = require("./../AuctionServices/AuctionService")
 const client = require("./client")
+const sendBid = require("./BidProducer")
 let INCREMENT = 100 ;
 class BiddingService {
 
@@ -10,7 +11,7 @@ class BiddingService {
             // get the current higest bid on the auction 
             let auction ;
             try{
-                auction = await AuctionService.fetchAuctionById(auctionId) ;
+                auction = await AuctionService.fetchAuctionByIdInternal(auctionId) ;
             }catch(err){
                 if(err.name === "AuctionIdInValid") {
                     return {status : 400 , message : "AuctionId not found !"} ;
@@ -19,7 +20,7 @@ class BiddingService {
                     return {status : 500 , message : "Internal Server Error"} ;
                 }
             }
-        
+            
             // check the auction is live or not 
             if(auction.status != "live"){
                 return {status : 400, message : "Auction is not live !"}
@@ -87,7 +88,38 @@ class BiddingService {
                 return {status : 500 , message : "Bid not placed"}
             }
     }
+
+static async placeBid2({ auctionId, buyerId, bidAmount }) {
+  try {
+    const auction = await AuctionService.fetchAuctionByIdInternal(auctionId);
+    if (!auction) {
+      return { status: 400, message: "Auction not found!" };
+    }
+
+    if (auction.status !== "live") {
+      return { status: 400, message: "Auction is not live!" };
+    }
+
+    const minBid = Math.max(auction.basePrice, auction.highestBid || 0) + INCREMENT;
+    if (bidAmount < minBid) {
+      return { status: 400, message: `Minimum bid amount: ${minBid}` };
+    }
+
+    await sendBid({ auctionId, buyerId, bidAmount });
+    return { status: 200, message: "Your bid has been queued!" };
+
+  } catch (err) {
+    console.error("Error in placeBid2:", err);
+    return { status: 500, message: "Internal Server Error" };
+  }
+}
+
+
+
+
     
 }
+
+
 
 module.exports = BiddingService;
